@@ -1,0 +1,438 @@
+unit Unit13;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs,Unit14, Vcl.Menus, Vcl.StdCtrls,
+  Vcl.ExtCtrls, Vcl.DBCtrls, Vcl.FileCtrl;
+
+type
+  TForm13 = class(TForm)
+    Label1: TLabel;
+    MainMenu1: TMainMenu;
+    Button1: TButton;
+    Button2: TButton;
+    Button3: TButton;
+    Button4: TButton;
+    Button5: TButton;
+    Button6: TButton;
+    Button7: TButton;
+    Button8: TButton;
+    Button9: TButton;
+    Button10: TButton;
+    Memo1: TMemo;
+    FileListBox1: TFileListBox;
+    DirectoryListBox1: TDirectoryListBox;
+    RadioGroup1: TRadioGroup;
+    Edit1: TEdit;
+    Edit2: TEdit;
+    Edit3: TEdit;
+    Edit4: TEdit;
+    Edit5: TEdit;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Button11: TButton;
+    N1: TMenuItem;
+    N2211: TMenuItem;
+    N2221: TMenuItem;
+    N2231: TMenuItem;
+    N2241: TMenuItem;
+    N2251: TMenuItem;
+    N2261: TMenuItem;
+    N2271: TMenuItem;
+    N2281: TMenuItem;
+    N2291: TMenuItem;
+    N221022121: TMenuItem;
+    N2: TMenuItem;
+    procedure Button10Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
+    procedure Button6Click(Sender: TObject);
+    procedure Button8Click(Sender: TObject);
+    procedure Button7Click(Sender: TObject);
+    procedure Button9Click(Sender: TObject);
+    procedure Button11Click(Sender: TObject);
+    procedure RadioGroup1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form13: TForm13;
+  File1Handle:THandle;
+  ByteWritten : cardinal;
+  UnicodePrefix:Word = $FEFF;
+  StrFile1: String;
+  StrFile2: String;
+  EOF:String=' ';
+  NewDateTime : TDateTime;
+  SRead: String;
+  Len, CntRead : Longword;
+  i: TDate;
+  ic:Byte=0;
+  H:hfile;
+  f: TFileTime;
+  s: TSystemTime;
+
+
+VolumeName,
+FileSystemName : array [0..MAX_PATH-1] of Char;
+VolumeSerialNo : DWord;
+MaxComponentLength,
+FileSystemFlags : DWORD;//Integer;
+
+
+implementation
+{$R *.dfm}
+
+
+
+
+
+
+
+
+
+
+procedure TForm13.Button10Click(Sender: TObject);
+begin
+RadioGroup1.Visible:=false;
+DirectoryListBox1.Visible:=false;
+FileListBox1.Visible:=false;
+Memo1.Visible:=true;
+SetVolumeLabel('C:\', 'PP342');
+GetVolumeInformation('C:\', VolumeName, MAX_PATH, @VolumeSerialNo,
+MaxComponentLength,
+FileSystemFlags,
+FileSystemName,MAX_PATH);
+Memo1.Lines.Add('VName = '+VolumeName);
+Memo1.Lines.Add('FSName = '+FileSystemName);
+
+end;
+
+procedure TForm13.Button11Click(Sender: TObject);
+begin
+S.wYear:=StrToInt(Edit1.Text);
+S.wMonth:=StrToInt(Edit2.Text);
+S.wDay:=StrToInt(Edit3.Text);
+S.wHour:=StrToInt(Edit4.Text);
+S.wMinute:=StrToInt(Edit5.Text);
+S.wMilliseconds:=999;
+File1Handle:=CreateFile('file1.txt',GENERIC_READ or GENERIC_WRITE,
+    FILE_SHARE_READ or FILE_SHARE_WRITE,nil,OPEN_ALWAYS,0,0);
+SystemTimeToFileTime(S, F);
+LocalFileTimeToFileTime(F, F);
+SetFileTime(File1Handle, @f, @f, @f);
+CloseHandle(File1Handle);
+Edit1.Visible:=false;
+Edit2.Visible:=false;
+Edit3.Visible:=false;
+Edit4.Visible:=false;
+Edit5.Visible:=false;
+Label2.Visible:=false;
+Label3.Visible:=false;
+Label4.Visible:=false;
+Label5.Visible:=false;
+Label6.Visible:=false;
+Label7.Visible:=false;
+Memo1.Visible:=true;
+Memo1.Lines.Add('2.2.7: Дата и время создания файла file1.txt успешно изменены!') ;
+Button8.Enabled:=true;
+
+end;
+
+procedure TForm13.Button1Click(Sender: TObject);
+begin
+SetCurrentDir('C:\ОС');
+if DirectoryExists(getcurrentdir+'\S1')
+then
+Memo1.Lines.Add('2.2.1:Не удалось создать иерархию каталогов:Каталог уже существует.')
+else
+begin
+
+CreateDir(getcurrentdir+'\S1');
+SetCurrentDir(getcurrentdir+'\S1');
+CreateDir(getcurrentdir+'\S2');
+SetCurrentDir(getcurrentdir+'\S2');
+CreateDir(getcurrentdir+'\S3');
+CreateDir(getcurrentdir+'\S4');
+CreateDir(getcurrentdir+'\S5');
+SetCurrentDir(getcurrentdir+'\S5');
+CreateDir(getcurrentdir+'\S6');
+SetCurrentDir('C:\ОС\S1');
+Button2.Enabled:=true;
+Button1.Enabled:=false;
+Memo1.Lines.Add('2.2.1:Иерархия каталогов успешно создана!') ;
+Memo1.Visible:=false;
+DirectoryListBox1.Visible:=true;
+end;
+
+end;
+
+procedure TForm13.Button2Click(Sender: TObject);
+begin
+SetCurrentDir('C:\ОС\S1');
+DirectoryListBox1.Visible:=false;
+Memo1.Visible:=true;
+File1Handle:=CreateFile('file1.txt',GENERIC_READ or GENERIC_WRITE,
+    FILE_SHARE_READ or FILE_SHARE_WRITE,nil,OPEN_ALWAYS,0,0);
+
+StrFile1:='Текстовая строка';
+WriteFile(File1Handle, UnicodePrefix, SizeOf(Word), ByteWritten, nil);
+WriteFile(File1Handle, Pointer(StrFile1)^, Length(StrFile1)+17,ByteWritten, nil);
+WriteFile(File1Handle, Pointer(EOF)^, Length(EOF),ByteWritten, nil);
+CloseHandle(File1Handle);
+Button3.Enabled:=true;
+Button2.Enabled:=false;
+Memo1.Lines.Add('2.2.2:Файл file1.txt успешно создан!') ;
+
+end;
+
+
+
+procedure TForm13.Button3Click(Sender: TObject);
+begin
+SetCurrentDir('C:\ОС\S1');
+if $ffffffff <> GetFileAttributes('file1.txt') then
+begin
+File1Handle:=CreateFile('file1.txt',GENERIC_READ or GENERIC_WRITE,
+    FILE_SHARE_READ or FILE_SHARE_WRITE,nil,OPEN_ALWAYS,0,0);
+Len := GetFileSize(File1Handle, @Len);
+  SetLength(SRead, Len);
+  try
+    ReadFile(File1Handle, Pointer(SRead)^, Len, CntRead, nil);
+  finally
+    CloseHandle(File1Handle);
+  end;
+  Delete(SRead,18,Length(SRead));
+  Button4.Enabled:=true;
+  Button3.Enabled:=false;
+  Memo1.Lines.Add('2.2.3:Содержимое файла file1.txt: '+SRead) ;
+end
+else
+begin
+ShowMessage('Файл не существует\удален!');
+end;
+
+end;
+
+procedure TForm13.Button4Click(Sender: TObject);
+begin
+SetCurrentDir('C:\ОС\S1');
+if $ffffffff <> GetFileAttributes('file1.txt') then
+begin
+File1Handle:=CreateFile('file1.txt',GENERIC_READ or GENERIC_WRITE,
+    FILE_SHARE_READ or FILE_SHARE_WRITE,nil,OPEN_ALWAYS,0,0);
+Len := GetFileSize(File1Handle, @Len);
+  SetLength(SRead, Len);
+  try
+    SetFilePointer(File1Handle,5,nil,FILE_BEGIN);
+    ReadFile(File1Handle, Pointer(SRead)^, 8, CntRead, nil);
+  finally
+    CloseHandle(File1Handle);
+  end;
+  Delete(SRead,1,4);
+  Delete(SRead,17,Length(SRead));
+  Button5.Enabled:=true;
+  Button4.Enabled:=false;
+  Memo1.Lines.Add('2.2.4:Считаны 8 байт из file1.txt, начиная с 5: '+SRead) ;
+end
+else
+begin
+ShowMessage('Файл не существует\удален!');
+end;
+
+end;
+
+
+
+
+procedure TForm13.Button5Click(Sender: TObject);
+begin
+SetCurrentDir('C:\ОС\S1');
+if $ffffffff <> GetFileAttributes('file1.txt') then
+begin
+StrFile2:='Дополнительная строка';
+File1Handle:=CreateFile('file1.txt',GENERIC_READ or GENERIC_WRITE,
+    FILE_SHARE_READ or FILE_SHARE_WRITE,nil,OPEN_EXISTING,0,0);
+Len := GetFileSize(File1Handle, @Len);
+SetLength(SRead, Len);
+  try
+    ReadFile(File1Handle, Pointer(SRead)^, Len, CntRead, nil);
+    SetFilePointer(File1Handle,0,nil,FILE_END);
+    WriteFile(File1Handle, Pointer(StrFile2)^, Length(StrFile2)+23,ByteWritten, nil);
+    WriteFile(File1Handle, Pointer(EOF)^, Length(EOF),ByteWritten, nil);
+    SetFilePointer(File1Handle,0,nil,FILE_BEGIN);
+    Len := GetFileSize(File1Handle, @Len);
+    SetLength(SRead, Len);
+    ReadFile(File1Handle, Pointer(SRead)^, Len, CntRead, nil);
+  finally
+    CloseHandle(File1Handle);
+  end;
+  Delete(SRead,43,Length(SRead));
+  Button6.Enabled:=true;
+  Button5.Enabled:=false;
+  Memo1.Lines.Add('2.2.5:Файл file1.txt после дозаписи: '+SRead) ;
+end
+else
+begin
+ShowMessage('Файл не существует\удален!');
+end;
+
+end;
+
+procedure TForm13.Button6Click(Sender: TObject);
+begin
+SetCurrentDir('C:\ОС\S1');
+if $ffffffff <> GetFileAttributes('file1.txt') then
+begin
+SetFileAttributes('file1.txt', faReadOnly or faHidden);
+DeleteFile('file1.txt');
+Button7.Enabled:=true;
+Button6.Enabled:=false;
+Memo1.Lines.Add('2.2.5:Атрибуты для file1.txt установлены!Невозможно удаление из-за атрибута:скрытый!') ;
+end
+else
+begin
+ShowMessage('Файл не существует\удален!');
+end;
+
+end;
+
+procedure TForm13.Button7Click(Sender: TObject);
+ var
+f: TFileTime;
+s: TSystemTime;
+
+begin
+SetCurrentDir('C:\ОС\S1');
+if $ffffffff <> GetFileAttributes('file1.txt') then
+begin
+Button7.Enabled:=false;
+Memo1.Visible:=false;
+button11.Visible:=true;
+Edit1.Visible:=true;
+Edit2.Visible:=true;
+Edit3.Visible:=true;
+Edit4.Visible:=true;
+Edit5.Visible:=true;
+Label2.Visible:=true;
+Label3.Visible:=true;
+Label4.Visible:=true;
+Label5.Visible:=true;
+Label6.Visible:=true;
+Label7.Visible:=true;
+button11.Visible:=true;
+SetFileAttributes('file1.txt', faNormal);
+end
+else
+begin
+ShowMessage('Файл не существует\удален!');
+end;
+end;
+
+procedure TForm13.Button8Click(Sender: TObject);
+begin
+SetCurrentDir('C:\ОС\S1');
+if $ffffffff <> GetFileAttributes('file1.txt') then
+begin
+MoveFile('file1.txt','file2.txt');
+Button9.Enabled:=true;
+Button8.Enabled:=false;
+Memo1.Lines.Add('2.2.8:Файл успешно переименован') ;
+end
+else
+begin
+ShowMessage('Файл не существует\удален!');
+end;
+
+end;
+
+procedure TForm13.Button9Click(Sender: TObject);
+begin
+SetCurrentDir('C:\ОС\S1');
+if $ffffffff <> GetFileAttributes('file2.txt') then
+begin
+Memo1.Visible:=false;
+RadioGroup1.Visible:=true;
+DirectoryListBox1.Visible:=true;
+FileListBox1.Visible:=true;
+MoveFile('file2.txt','C:\ОС\S1\S2\file2.txt');
+DeleteFile('file2.txt');
+CopyFile('C:\ОС\S1\S2\file2.txt','C:\ОС\S1\S2\S3\file2.txt',false);
+RadioGroup1.Items.Add('S1');
+RadioGroup1.Items.Add('S2');
+RadioGroup1.Items.Add('S3');
+Button10.Enabled:=true;
+Button9.Enabled:=false;
+Memo1.Lines.Add('2.2.9:Файл успешно переслан!') ;
+end
+else
+begin
+ShowMessage('Файл не существует\удален!');
+end;
+
+end;
+
+procedure TForm13.FormCreate(Sender: TObject);
+begin
+
+DirectoryListBox1.Visible:=false;
+Memo1.Visible:=true;
+Memo1.Lines.Clear;
+Memo1.Lines.Add('    ') ;
+Edit1.Visible:=false;
+Edit2.Visible:=false;
+Edit3.Visible:=false;
+Edit4.Visible:=false;
+Edit5.Visible:=false;
+Label2.Visible:=false;
+Label3.Visible:=false;
+Label4.Visible:=false;
+Label5.Visible:=false;
+Label6.Visible:=false;
+Label7.Visible:=false;
+RadioGroup1.Visible:=false;
+FileListBox1.Visible:=false;
+button11.Visible:=false;
+end;
+
+
+
+procedure TForm13.RadioGroup1Click(Sender: TObject);
+begin
+SetCurrentDir('C:\ОС\S1');
+if RadioGroup1.ItemIndex=0 then
+begin
+FileListBox1.Directory:='C:\ОС\S1\';
+DirectoryListBox1.Directory:= 'C:\ОС\S1\';
+end;
+
+if RadioGroup1.ItemIndex=1 then
+begin
+FileListBox1.Directory:='C:\ОС\S1\S2\';
+DirectoryListBox1.Directory:= 'C:\ОС\S1\S2\';
+end;
+
+if RadioGroup1.ItemIndex=2 then
+begin
+FileListBox1.Directory:='C:\ОС\S1\S2\S3\';
+DirectoryListBox1.Directory:= 'C:\ОС\S1\S2\S3\';
+end;
+
+end;
+
+
+end.
+

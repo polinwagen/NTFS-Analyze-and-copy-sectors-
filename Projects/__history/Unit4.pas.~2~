@@ -1,0 +1,124 @@
+unit Unit4;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs,MvThr, Vcl.ExtCtrls, Vcl.ComCtrls,
+  Vcl.StdCtrls;
+
+type
+  TForm4 = class(TForm)
+    Button1: TButton;
+    Button2: TButton;
+    Button3: TButton;
+    Button4: TButton;
+    Button5: TButton;
+    Button6: TButton;
+    Button7: TButton;
+    TrackBar1: TTrackBar;
+    TrackBar2: TTrackBar;
+    TrackBar3: TTrackBar;
+    PaintBox1: TPaintBox;
+    PaintBox2: TPaintBox;
+    PaintBox3: TPaintBox;
+    procedure FormCreate(Sender: TObject);
+    procedure Button6Click(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure TrackBar1Change(Sender: TObject);
+
+  private
+    { Private declarations }
+  public
+   Thread1, Thread2, Thread3:TMoveThread;
+  end;
+
+var
+  Form4: TForm4;
+  taxi00, taxi01,taxi02,taxi03,taxi04,taxi05 : TbitMap;
+
+implementation
+
+{$R *.dfm}
+
+procedure TForm4.Button1Click(Sender: TObject);
+begin
+if Thread1.Suspended=true then  Thread1.Resume;
+end;
+
+procedure TForm4.Button2Click(Sender: TObject);
+begin
+if Thread2.Suspended=true then  Thread2.Resume;
+end;
+
+procedure TForm4.Button3Click(Sender: TObject);
+begin
+if Thread3.Suspended=true then  Thread3.Resume;
+end;
+
+procedure TForm4.Button4Click(Sender: TObject);
+begin
+if Thread3.Suspended=false then  Thread3.Suspend;
+end;
+
+procedure TForm4.Button5Click(Sender: TObject);
+begin
+if Thread2.Suspended=false then  Thread2.Suspend;
+end;
+
+procedure TForm4.Button6Click(Sender: TObject);
+begin
+if Thread1.Suspended=false then  Thread1.Suspend;
+end;
+
+
+
+procedure TForm4.FormCreate(Sender: TObject);
+begin
+taxi00:=tbitmap.Create;
+taxi00.LoadFromFile('C:\Users\Полина\Documents\taxi.bmp');
+taxi01:=tbitmap.Create;
+taxi01.LoadFromFile('C:\Users\Полина\Documents\taxi1.bmp');
+thread1:=TMoveThread.Create(taxi00,taxi01,PaintBox1);
+ //Создается поток
+Thread1.Priority:=tpLowest;
+
+taxi02:=tbitmap.Create;
+taxi02.LoadFromFile('C:\Users\Полина\Documents\taxi.bmp');
+taxi03:=tbitmap.Create;
+taxi03.LoadFromFile('C:\Users\Полина\Documents\taxi1.bmp');
+thread1:=TMoveThread.Create(taxi00,taxi01,PaintBox1);
+ //Создается поток
+Thread2.Priority:=tpLowest;
+
+
+taxi04:=tbitmap.Create;
+taxi04.LoadFromFile('C:\Users\Полина\Documents\taxi.bmp');
+taxi05:=tbitmap.Create;
+taxi05.LoadFromFile('C:\Users\Полина\Documents\taxi1.bmp');
+thread3:=TMoveThread.Create(taxi00,taxi01,PaintBox1);
+ //Создается поток
+Thread3.Priority:=tpLowest;
+
+
+end;
+
+procedure TForm4.TrackBar1Change(Sender: TObject);
+
+var I: integer;
+priority:TThreadPriority;
+{ Изменение приоритета соответствующего потока }
+begin
+priority:=tpIdle;
+for i:=0 to ((sender as ttrackbar).position -1) do inc(priority);
+if sender=trackbar1 then thread1.priority:=priority  else
+if sender=trackbar3 then thread3.priority:=priority
+else thread2.Priority:=priority;
+end;
+
+
+end.

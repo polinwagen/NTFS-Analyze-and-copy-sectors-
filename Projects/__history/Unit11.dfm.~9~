@@ -1,0 +1,108 @@
+object Form11: TForm11
+  Left = 0
+  Top = 0
+  Caption = 'Form11'
+  ClientHeight = 336
+  ClientWidth = 635
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label1: TLabel
+    Left = 24
+    Top = 63
+    Width = 279
+    Height = 19
+    Caption = #1042#1099#1073#1077#1088#1077#1090#1077' '#1075#1088#1091#1087#1087#1091' '#1092#1072#1081#1083#1086#1074' '#1076#1083#1103' '#1072#1085#1072#1083#1080#1079#1072
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object SpeedButton1: TSpeedButton
+    Left = 424
+    Top = 163
+    Width = 187
+    Height = 46
+    Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clMaroon
+    Font.Height = -15
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label2: TLabel
+    Left = 24
+    Top = 16
+    Width = 189
+    Height = 19
+    Caption = #1042#1099#1073#1077#1088#1077#1090#1077' '#1076#1080#1089#1082'-'#1086#1088#1080#1075#1080#1085#1072#1083':'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object SpeedButton2: TSpeedButton
+    Left = 498
+    Top = 280
+    Width = 113
+    Height = 33
+    Caption = #1042#1067#1061#1054#1044
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object DriveComboBox1: TDriveComboBox
+    Left = 240
+    Top = 18
+    Width = 145
+    Height = 19
+    TabOrder = 0
+    OnChange = DriveComboBox1Change
+  end
+  object DirectoryListBox1: TDirectoryListBox
+    Left = 24
+    Top = 88
+    Width = 145
+    Height = 193
+    TabOrder = 1
+    OnChange = DirectoryListBox1Change
+  end
+  object FileListBox1: TFileListBox
+    Left = 200
+    Top = 88
+    Width = 185
+    Height = 193
+    ItemHeight = 13
+    MultiSelect = True
+    TabOrder = 2
+  end
+  object Button1: TButton
+    Left = 407
+    Top = 88
+    Width = 220
+    Height = 41
+    Caption = #1055#1077#1088#1077#1081#1090#1080' '#1074' '#1084#1077#1085#1102' "'#1050#1086#1087#1080#1088#1086#1074#1072#1085#1080#1077' '#1080' '#1072#1085#1072#1083#1080#1079'"'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 3
+    OnClick = Button1Click
+  end
+end

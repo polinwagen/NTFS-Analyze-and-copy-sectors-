@@ -1,0 +1,124 @@
+object Form4: TForm4
+  Left = 0
+  Top = 0
+  Caption = 'Form4'
+  ClientHeight = 740
+  ClientWidth = 943
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object PaintBox1: TPaintBox
+    Left = 8
+    Top = 8
+    Width = 911
+    Height = 113
+  end
+  object PaintBox2: TPaintBox
+    Left = 8
+    Top = 127
+    Width = 911
+    Height = 113
+  end
+  object PaintBox3: TPaintBox
+    Left = 8
+    Top = 246
+    Width = 911
+    Height = 105
+  end
+  object Button1: TButton
+    Left = 48
+    Top = 528
+    Width = 75
+    Height = 25
+    Caption = #1089#1090#1072#1088#1090
+    TabOrder = 0
+    OnClick = Button1Click
+  end
+  object Button2: TButton
+    Left = 368
+    Top = 528
+    Width = 75
+    Height = 25
+    Caption = #1089#1090#1072#1088#1090
+    TabOrder = 1
+    OnClick = Button2Click
+  end
+  object Button3: TButton
+    Left = 688
+    Top = 528
+    Width = 75
+    Height = 25
+    Caption = #1089#1090#1072#1088#1090
+    TabOrder = 2
+    OnClick = Button3Click
+  end
+  object Button4: TButton
+    Left = 688
+    Top = 616
+    Width = 75
+    Height = 25
+    Caption = #1089#1090#1086#1087
+    TabOrder = 3
+    OnClick = Button4Click
+  end
+  object Button5: TButton
+    Left = 368
+    Top = 608
+    Width = 75
+    Height = 25
+    Caption = #1089#1090#1086#1087
+    TabOrder = 4
+    OnClick = Button5Click
+  end
+  object Button6: TButton
+    Left = 48
+    Top = 608
+    Width = 75
+    Height = 25
+    Caption = #1089#1090#1086#1087
+    TabOrder = 5
+    OnClick = Button6Click
+  end
+  object Button7: TButton
+    Left = 844
+    Top = 687
+    Width = 75
+    Height = 25
+    Caption = #1074#1099#1093#1086#1076
+    TabOrder = 6
+  end
+  object TrackBar1: TTrackBar
+    Left = 48
+    Top = 440
+    Width = 150
+    Height = 45
+    Max = 4
+    TabOrder = 7
+    OnChange = TrackBar1Change
+  end
+  object TrackBar2: TTrackBar
+    Left = 656
+    Top = 440
+    Width = 150
+    Height = 45
+    Max = 4
+    TabOrder = 8
+    OnChange = TrackBar2Change
+  end
+  object TrackBar3: TTrackBar
+    Left = 344
+    Top = 440
+    Width = 150
+    Height = 45
+    Max = 4
+    TabOrder = 9
+    OnChange = TrackBar3Change
+  end
+end

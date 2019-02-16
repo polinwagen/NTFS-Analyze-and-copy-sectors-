@@ -1,0 +1,33 @@
+unit Thrd;
+
+interface
+
+uses
+  System.Classes;
+
+type
+  TSimpleThread = class(TThread)
+  private
+    { Private declarations }
+  protected
+    procedure Execute; override;
+     public
+Count: Integer;
+  end;
+
+implementation
+
+
+
+procedure TSimpleThread.Execute;
+ var
+    I, Total, Avg: integer;
+begin
+    while True do
+     begin
+      Total:=0;
+      for i:=1 to 10 do inc(Total, Random(Maxint));
+       Avg:=Avg Div 10; inc(Count);
+     end;
+
+end.

@@ -1,0 +1,139 @@
+unit Unit4;
+
+interface
+
+uses
+  Classes,Windows, Messages, SysUtils, Variants,  Graphics, Controls, Forms,
+  Dialogs, StdCtrls, FileCtrl,ComCtrls, Buttons;
+
+type
+  ThrCopy = class(TThread)
+  private
+     ExitProcFlag:boolean;
+     procedure CopySector;
+    procedure DirSearch(Dir: string);
+    procedure CopySectbysect;
+  protected
+    procedure Execute; override;
+    destructor Destroy; override;
+  end;
+
+implementation
+Uses Unit12,Unit11;
+
+
+procedure ThrCopy.CopySectbysect;
+
+begin
+s:=Pchar('\\.\'+form11.DriveCombobox1.Drive+':');
+s1:=Pchar('\\.\'+form11.DriveCombobox2.Drive+':');
+SetCurrentDir(s1+'\');
+CreateDir(s1+'\'+CurrentName);
+DirSearch(s+'\'+CurrentName);
+ if ExitProcFlag then exit;
+ShowMessage(' опирование каталога "'+directory+'" и его содержимого успешно завершено!');
+end;
+
+
+procedure ThrCopy.DirSearch(Dir: string);
+var
+  SearchRec: TSearchRec;
+  j:byte;
+
+begin
+  if ExitProcFlag then exit;
+  Dir := IncludeTrailingBackslash(Dir);
+  j:=0;
+
+
+  if FindFirst(Dir + '*.*', faAnyFile, SearchRec) = 0 then
+    repeat
+      Application.ProcessMessages;
+
+        if (SearchRec.Attr and faDirectory) <> 0 then begin
+          if (SearchRec.name <> '.') and (SearchRec.name <> '..') then
+          begin
+            CreateDir(s1+'\'+copy(Dir,8,length(Dir)-7)+'\'+SearchRec.Name);
+            DirSearch(Dir + SearchRec.name);
+          end;
+        end
+
+
+      else
+       begin
+
+
+       CurrentName:=Copy(Dir,8,length(Dir)-7);
+       names:=ExtractFileName(SearchRec.Name);
+       CopySector;
+       names:='';
+
+
+
+       end;
+
+
+    until FindNext(SearchRec) <> 0;
+  FindClose(SearchRec);
+end;
+
+procedure ThrCopy.CopySector;    //копирование по секторам
+var
+  iFileHandle,iFileHandle1: Integer;
+  iFileLength: Integer;
+  iBytesRead: Integer;
+  Buffer: PChar;
+  i,j: Integer;
+  m:integer;
+begin
+      if ExitProcFlag then exit;
+
+        I:=0;
+      Form12.Memo1.Lines.Add(' опирование файла:'+names);
+      SetCurrentDir(s1+'\'+CurrentName);
+     iFileHandle1:=CreateFile(Pchar(Names), GENERIC_READ, FILE_SHARE_READ or FILE_SHARE_WRITE,nil,OPEN_ALWAYS,0,0);
+     FileClose(iFileHandle1);
+      iFileHandle := FileOpen(s+'\'+CurrentName+'\'+Names, fmOpenRead);
+      iFileLength := FileSeek(iFileHandle,0,2);
+      iFileHandle1 := FileOpen(s1+'\'+CurrentName+'\'+Names, fmOpenWrite);
+      Buffer := PChar(AllocMem(512 + 1));   //копирование по блокам равным одному сектору
+         while I<=iFileLength do
+         begin
+
+       FileSeek(iFileHandle,0,I);
+       FileSeek(iFileHandle1,0,I);
+
+      iBytesRead := FileRead(iFileHandle, Buffer^, 512);
+      iBytesRead:=FileWrite(iFileHandle1, Buffer^, 512);
+
+
+      m:=I div 512;
+       Form12.Memo1.Lines.Add('—копирован сектор:'+inttostr(m));
+
+
+      I:=I+512;
+
+         end;
+
+      FileClose(iFileHandle);
+      FileClose(iFileHandle1);
+      FreeMem(Buffer);
+      inc(j);
+
+  end;
+
+
+
+
+
+procedure ThrCopy.Execute;
+begin
+CopySectbysect;
+  { Place thread code here }
+end;
+destructor ThrCopy.Destroy;
+begin
+ ExitProcFlag:=true;
+inherited Destroy;
+end;
+end.

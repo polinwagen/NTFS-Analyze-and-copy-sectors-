@@ -1,0 +1,69 @@
+unit MvThr;
+
+interface
+
+uses
+ Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ComCtrls, ExtCtrls,Math;
+
+
+type
+  TMoveThread = class(TThread)
+  private
+     FBox: TPaintBox;
+     i:integer;
+     b0,b1,b2:char;
+     x1,x2,x3:integer;
+
+     procedure movechar1;
+
+  protected
+    procedure Execute; override;
+    public
+    constructor Create(a,b,c:char; T:TPaintBox);
+    destructor Destroy; override;
+  end;
+
+
+implementation
+uses тренажер;
+
+constructor TMoveThread.Create(a,b,c:char; T:TPaintBox);
+begin
+           b0:=a; b1:=b; b2:=c; Fbox:=T; i:=0;
+         inherited Create(True);
+end;
+destructor TMoveThread.Destroy;
+begin
+Fbox.Free;
+
+ inherited Destroy;
+end;
+
+
+procedure TMoveThread.Execute;
+  begin
+  x1:=Random(690);
+  x2:=Random(690);
+  x3:=Random(690);
+  while True do
+  begin
+    while i<=194 do  movechar1;
+  end;
+
+end;
+
+procedure TMoveThread.movechar1;
+begin
+
+  with Fbox do
+   begin
+   canvas.TextOut(x1,i,b0);
+   canvas.TextOut(x2,i,b1);
+   canvas.TextOut(x3,i,b2);
+   sleep(100);
+     inc(i);
+   end;
+end;
+
+end.

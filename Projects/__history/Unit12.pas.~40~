@@ -1,0 +1,589 @@
+unit Unit12;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.FileCtrl, Vcl.ComCtrls,Unit11,
+  Vcl.Buttons,ShellAPI;
+
+type
+  TForm12 = class(TForm)
+    Memo1: TMemo;
+    Memo2: TMemo;
+    Label3: TLabel;
+    Label4: TLabel;
+    SpeedButton3: TSpeedButton;
+    SpeedButton4: TSpeedButton;
+    BitBtn2: TBitBtn;
+    SpeedButton1: TSpeedButton;
+    BitBtn3: TBitBtn;
+    BitBtn4: TBitBtn;
+    SpeedButton2: TSpeedButton;
+    SaveDialog1: TSaveDialog;
+    BitBtn1: TBitBtn;
+    BitBtn5: TBitBtn;
+    BitBtn7: TBitBtn;
+    procedure SpeedButton3Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure SpeedButton4Click(Sender: TObject);
+    procedure SpeedButton1Click(Sender: TObject);
+    procedure SpeedButton2Click(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
+    procedure BitBtn4Click(Sender: TObject);
+    procedure BitBtn3Click(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure BitBtn5Click(Sender: TObject);
+    procedure BitBtn7Click(Sender: TObject);
+
+  private
+    { Private declarations }
+  public
+  procedure iaSearchFile;
+  procedure iaSearchDir;
+  procedure GetFileRecordDir;
+  procedure GetFileRecordFile;
+
+  end;
+
+var
+  Form12: TForm12;
+  diradr,fladr:int64;
+  I1,z,I2,m:byte;
+  dirnum,currentdirnum:integer;  //номер файловой записи  каталога
+  flnum:array [0..20] of integer; // номера файловых записей файлов
+  dir :array [1..4] of word;
+  filedir :array [1..4] of word;
+  wideChars   : array[0..99] of WideChar;
+  i:word;
+  bytes:integer;
+  flcloffs,flfrstcl,fllstcl:array[0..20,0..10] of int64;
+  names: string;
+  directory:string;
+  Thread1,Thread2:TThread;
+implementation
+{$R *.dfm}
+uses Unit4,Unit5;
+
+procedure TForm12.SpeedButton1Click(Sender: TObject);
+begin
+Savedialog1.FileName:='Copy.txt';
+if SaveDialog1.Execute then
+Memo1.Lines.SaveToFile(Savedialog1.FileName);
+end;
+
+procedure TForm12.SpeedButton2Click(Sender: TObject);
+begin
+Savedialog1.FileName:='Analis.txt';
+if SaveDialog1.Execute then
+Memo2.Lines.SaveToFile(Savedialog1.FileName);
+end;
+
+procedure TForm12.SpeedButton3Click(Sender: TObject);
+begin
+
+
+//переход к корневому каталогу,он всегда 5ая файловая запись
+
+dirnum:=5;
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+j:=1;
+
+while DirectoryNames[j]<>'' do
+begin
+directoryf:=DirectoryNames[j];
+GetFileRecordDir();
+inc(j);
+end;
+
+
+directoryf:=CurrentName;
+GetFileRecordDir(); //получаем номер файловой записи каталога
+currentdirnum:=dirnum;
+GetFileRecordFile(); //получим номера файловых запесей выбранных файлов внутри каталога
+
+
+
+Thread2:=ThrAnalys.Create(false);
+Thread2.Priority:=tpLowest;
+SpeedButton3.Enabled:=False;
+
+
+
+
+
+end;
+
+
+procedure TForm12.SpeedButton4Click(Sender: TObject);
+begin
+directory:=CurrentName;
+Thread1:=ThrCopy.Create(false);
+Thread1.Priority:=tpLowest;
+SpeedButton4.Enabled:=False;
+end;
+
+
+
+
+
+
+
+
+
+
+procedure TForm12.BitBtn1Click(Sender: TObject);
+begin
+if Thread2.Suspended= true then  Thread2.Resume;
+Thread2.Destroy;
+BitBtn5.Enabled:=False;
+BitBtn1.Enabled:=False;
+   form12.Memo2.Lines.Add('Анализ прерван пользователем');
+end;
+
+procedure TForm12.BitBtn2Click(Sender: TObject);
+begin
+ form12.Close;
+end;
+
+
+procedure TForm12.BitBtn3Click(Sender: TObject);
+begin
+if Thread1.Suspended= true then  Thread1.Resume;
+Thread1.Destroy;
+BitBtn4.Enabled:=False;
+BitBtn3.Enabled:=False;
+   form12.Memo1.Lines.Add('Копирование прервано пользователем');
+end;
+
+procedure TForm12.BitBtn4Click(Sender: TObject);
+begin
+if Thread1.Suspended=false then Thread1.Suspend
+else thread1.Resume;
+end;
+
+procedure TForm12.BitBtn5Click(Sender: TObject);
+begin
+if Thread2.Suspended=false then Thread1.Suspend
+else thread2.Resume;
+end;
+
+procedure TForm12.BitBtn7Click(Sender: TObject);
+begin
+WinExec('hh.exe NewProjectFATH.chm',SW_SHOW);
+end;
+
+procedure TForm12.FormCreate(Sender: TObject);
+begin
+memo1.Lines.Clear;
+memo2.Lines.Clear;
+end;
+
+procedure TForm12.GetFileRecordDir;
+begin
+diradr:=(mffrstcl[0]*8*512)+dirnum*2*512;
+
+  FillChar(buf1,sizeof(buf1),0);
+ if(hDevice<>INVALID_HANDLE_VALUE) then begin
+  SetFilePointerEx(hDevice,diradr,nil,FILE_BEGIN);
+  bResult:=ReadFile(hDevice,buf1,1024,lpBytesReturned,nil); //читаем корневой каталог
+ end;
+
+attrhead:=$A0;
+FillChar(DATA,sizeof(DATA),0);
+FillChar(attr,sizeof(attr),0);
+FillChar(atrlenght,sizeof(atrlenght),0);
+atroffset:=0;
+// в  DATA будет лежать аттрибут allocation index для корневого каталога
+Form11.Search();
+// теперь надо найти отрезки .длина атрибута   IA равна 4,значит отрезки начинаются со смещения 48h
+
+offset:=72; //48h
+
+
+FillChar(cloffs,sizeof(cloffs),0);
+FillChar(frstcl,sizeof(frstcl),0);
+FillChar(lstcl,sizeof(lstcl),0);
+Form11.UnPack();  // получаем список отрезков атрибута IA
+                 //cloffs,frstcl,lstcl-кластерное смещение,первыйкластер,последний кластер
+z:=0;
+  FillChar(wideChars,sizeof(wideChars),0);
+  StringToWideChar(directoryf, wideChars, 100); //юникод русских символов
+  FillChar(dir,sizeof(dir),0);
+
+ for I1 := 1 to 4 do                      //помещаем имя каталога в массив
+    begin
+    dir[I1]:=ord(wideChars[I1-1]);
+    end;
+
+
+
+ while cloffs[z]<> 0 do
+ begin
+   for m := 0 to cloffs[z]-1 do
+   begin
+
+  bytes:=8*512;   //кластер,т.к в каждом кластере новая индексная запись
+
+diradr:=(frstcl[z]*8*512)+bytes*m;
+ FillChar(buf1,sizeof(buf1),0);
+ if(hDevice<>INVALID_HANDLE_VALUE) then begin
+  SetFilePointerEx(hDevice,diradr,nil,FILE_BEGIN);
+  bResult:=ReadFile(hDevice,buf1,bytes,lpBytesReturned,nil); //читаем index allocation корневого каталога
+ end;
+
+   iaSearchDir; // ищем номер файловой записи выбранного каталога
+    end;
+   inc(z);
+    end;
+
+
+end;
+
+
+
+procedure TForm12.GetFileRecordFile;
+begin
+  diradr:=(mffrstcl[0]*8*512)+dirnum*2*512;
+
+  FillChar(buf1,sizeof(buf1),0);
+ if(hDevice<>INVALID_HANDLE_VALUE) then begin
+  SetFilePointerEx(hDevice,diradr,nil,FILE_BEGIN);
+  bResult:=ReadFile(hDevice,buf1,1024,lpBytesReturned,nil); //читаем выбранный каталог
+ end;
+
+
+attrhead:=$A0;
+FillChar(DATA,sizeof(DATA),0);
+FillChar(attr,sizeof(attr),0);
+FillChar(atrlenght,sizeof(atrlenght),0);
+atroffset:=0;
+                // в  DATA будет лежать аттрибут allocation index для выбранного каталога
+Form11.Search();
+
+              // теперь надо найти отрезки .длина атрибута   IA равна 4,значит отрезки начинаются со смещения 48h
+
+
+offset:=72; //48h
+
+
+FillChar(cloffs,sizeof(cloffs),0);
+FillChar(frstcl,sizeof(frstcl),0);
+FillChar(lstcl,sizeof(lstcl),0);
+Form11.UnPack();  // получаем список отрезков атрибута IA
+                 //cloffs,frstcl,lstcl-кластерное смещение,первыйкластер,последний кластер
+
+
+
+ for I2 := 0 to num-1 do
+ begin
+    StringReplace(select[I2], #13, '', [rfReplaceAll]);
+    StringReplace(select[I2], #10, '', [rfReplaceAll]);
+
+
+ z:=0;
+  FillChar(wideChars,sizeof(wideChars),0);
+  StringToWideChar( select[I2], wideChars, 100); //юникод русских символов
+  FillChar(filedir ,sizeof(dir),0);
+
+ for I1 := 1 to 4 do                      //помещаем имя файла в массив
+    begin
+    filedir [I1]:=ord(wideChars[I1-1]);
+    end;
+
+
+
+ while cloffs[z]<> 0 do
+ begin
+    for m := 0 to cloffs[z]-1 do
+   begin
+
+  bytes:=8*512;   //кластер,т.к в каждом кластере новая индексная запись
+  diradr:=(frstcl[z]*8*512)+bytes*m;
+
+ FillChar(buf1,sizeof(buf1),0);
+ if(hDevice<>INVALID_HANDLE_VALUE) then begin
+  SetFilePointerEx(hDevice,diradr,nil,FILE_BEGIN);
+  bResult:=ReadFile(hDevice,buf1,bytes,lpBytesReturned,nil); //читаем index allocation
+ end;
+
+   iaSearchFile(); // ищем номер файловой записи выбранного файла
+   end;
+   inc(z);
+ end;
+ end;
+
+end;
+
+
+
+
+
+
+
+
+
+
+procedure TForm12.iaSearchDir;//для каталога
+ var
+iabuf: array [0..7] of byte;
+name: array [1..4] of word;
+I:longint;
+j:byte;
+ravno:bool;
+frstentryindex,indsize,nameoffset,namedir:longint;
+a:integer;
+  begin
+   FillChar(name,sizeof(name),0);
+    FillChar(iabuf,sizeof(iabuf),0);
+    j:=0;
+
+
+     for I := 24 to 27  do
+     begin
+      iabuf[j]:=buf1[I];
+      inc(j);
+     end;
+
+      j:=0;
+
+      frstentryindex:=int64(iabuf)+24; //начало индексной записи относительно ia
+      FillChar(iabuf,sizeof(iabuf),0);
+
+
+
+
+
+  ravno:=false;
+
+
+  while ravno=false do
+  begin
+  
+       FillChar(name,sizeof(name),0);
+       FillChar(iabuf,sizeof(iabuf),0);
+
+
+       j:=0;
+
+
+
+
+     for I := frstentryindex+8 to frstentryindex+9  do
+      begin
+      iabuf[j]:=buf1[I];
+      inc(j);
+     end;
+    j:=0;
+
+
+      indsize:=int64(iabuf); //размер индексной записи
+      FillChar(iabuf,sizeof(iabuf),0);
+
+
+    for I := frstentryindex+10 to frstentryindex+11  do
+     begin
+     iabuf[j]:=buf1[I];
+     inc(j);
+     end;
+     j:=0;
+
+
+     nameoffset:=int64(iabuf); //начало file name
+      FillChar(iabuf,sizeof(iabuf),0);
+
+
+     //один символ 2 байта ,берем для сравнения первых 4 символа ,читаем 8 байт
+        a:=82-nameoffset;
+        j:=1;
+
+    for I := frstentryindex+nameoffset+a to frstentryindex+nameoffset+a+8  do
+     begin
+      if (I mod 2)<>0 then
+      begin
+      name[j]:=name[j]+(buf1[I] shl 8);
+      inc(j);
+      end;
+
+     if (I mod 2)=0 then
+        begin
+        name[j]:=name[j]+buf1[I];
+        end;
+
+        end;
+
+            j:=0;
+            
+       for I := frstentryindex to frstentryindex+5 do
+     begin
+     iabuf[j]:=buf1[I];
+     inc(j);
+     end;
+    j:=0;
+
+    dirnum:=int64(iabuf);  //носер фс
+    FillChar(iabuf,sizeof(iabuf),0);
+
+
+
+    frstentryindex:=frstentryindex+indsize;
+
+
+ if name[1]=dir[1] then
+   if name[2]=dir[2] then
+      if name[3]=dir[3] then
+         if name[4]=dir[4] then
+               ravno:=True;
+
+
+   if indsize = 0 then        // если кол-во кластеров н-го прочитано и каталог не найден выйти из процедуры и читать след отр
+          ravno:=True;
+
+
+  end;
+
+
+
+
+
+ end;
+
+
+procedure TForm12.iaSearchFile;    //для файлов
+ var
+iabuf: array [0..7] of byte;
+name: array [1..4] of word;
+I:longint;
+j:byte;
+ravno:bool;
+frstentryindex,indsize,nameoffset:longint;
+a:integer;
+  begin
+   FillChar(name,sizeof(name),0);
+    FillChar(iabuf,sizeof(iabuf),0);
+    j:=0;
+
+
+     for I := 24 to 27  do
+     begin
+      iabuf[j]:=buf1[I];
+      inc(j);
+     end;
+
+      j:=0;
+
+      frstentryindex:=int64(iabuf)+24; //начало индексной записи относительно ia
+      FillChar(iabuf,sizeof(iabuf),0);
+
+
+
+
+
+  ravno:=false;
+
+
+  while ravno=false do
+  begin
+
+       FillChar(name,sizeof(name),0);
+       FillChar(iabuf,sizeof(iabuf),0);
+
+
+       j:=0;
+
+
+
+
+     for I := frstentryindex+8 to frstentryindex+9  do
+      begin
+      iabuf[j]:=buf1[I];
+      inc(j);
+     end;
+    j:=0;
+
+
+      indsize:=int64(iabuf); //размер индексной записи
+      FillChar(iabuf,sizeof(iabuf),0);
+
+
+    for I := frstentryindex+10 to frstentryindex+11  do
+     begin
+     iabuf[j]:=buf1[I];
+     inc(j);
+     end;
+     j:=0;
+
+
+     nameoffset:=int64(iabuf); //начало file name
+      FillChar(iabuf,sizeof(iabuf),0);
+
+
+     //один символ 2 байта ,берем для сравнения первых 4 символа ,читаем 8 байт
+        a:=82-nameoffset; //отриц чисел не может быть,меняем местами
+        j:=1;
+
+    for I := frstentryindex+nameoffset+a to frstentryindex+nameoffset+a+8  do
+     begin
+      if (I mod 2)<>0 then
+      begin
+      name[j]:=name[j]+(buf1[I] shl 8);
+      inc(j);
+      end;
+
+     if (I mod 2)=0 then
+        begin
+        name[j]:=name[j]+buf1[I];
+        end;
+
+        end;
+
+            j:=0;
+
+       for I := frstentryindex to frstentryindex+5 do
+     begin
+     iabuf[j]:=buf1[I];
+     inc(j);
+     end;
+    j:=0;
+
+    flnum[I2]:=int64(iabuf);  //носер фс
+    FillChar(iabuf,sizeof(iabuf),0);
+
+
+
+    frstentryindex:=frstentryindex+indsize;
+
+
+ if name[1]=filedir[1] then
+   if name[2]=filedir[2] then
+      if name[3]=filedir[3] then
+         if name[4]=filedir[4] then
+               ravno:=True;
+
+
+   if indsize = 0 then        // если кол-во кластеров н-го прочитано и каталог не найден выйти из процедуры и читать след отр
+          ravno:=True;
+
+
+  end;
+
+
+
+
+
+ end;
+
+
+
+
+
+
+
+
+
+end.

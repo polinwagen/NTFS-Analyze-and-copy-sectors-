@@ -1,0 +1,141 @@
+unit MvThr;
+
+interface
+
+uses
+ Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ComCtrls, ExtCtrls,Math;
+
+
+type
+  TMoveThread = class(TThread)
+  private
+     FBox: TPaintBox;
+     i1,i2,i3:integer;
+     x1,x2,x3:integer;
+
+     procedure movechar1;
+
+  protected
+    procedure Execute; override;
+    public
+    constructor Create( T:TPaintBox);
+    destructor Destroy; override;
+  end;
+
+
+implementation
+uses тренажер;
+
+constructor TMoveThread.Create( T:TPaintBox);
+begin
+          Fbox:=T; i1:=0;
+                   i2:=0;
+                   i3:=0;
+         inherited Create(True);
+end;
+destructor TMoveThread.Destroy;
+begin
+Fbox.Free;
+
+ inherited Destroy;
+end;
+
+
+procedure TMoveThread.Execute;
+  begin
+  rus[1]:='а';      latin[1]:='a';
+  rus[2]:='б';      latin[2]:='b';
+  rus[3]:='в';      latin[3]:='c';
+  rus[4]:='г';      latin[4]:='d';
+  rus[5]:='д';      latin[5]:='e';
+  rus[6]:='е';      latin[6]:='f';
+  rus[7]:='ё';      latin[7]:='g';
+  rus[8]:='ж';      latin[8]:='h';
+  rus[9]:='з';      latin[9]:='i';
+  rus[10]:='и';     latin[10]:='j';
+  rus[11]:='й';     latin[11]:='k';
+  rus[12]:='к';     latin[12]:='l';
+  rus[13]:='л';     latin[13]:='m';
+  rus[14]:='м';     latin[14]:='n';
+  rus[15]:='н';     latin[15]:='o';
+  rus[16]:='о';     latin[16]:='p';
+  rus[17]:='п';     latin[17]:='q';
+  rus[18]:='р';     latin[18]:='r';
+  rus[19]:='с';     latin[19]:='s';
+  rus[20]:='т';     latin[20]:='t';
+  rus[21]:='у';     latin[21]:='u';
+  rus[22]:='ф';     latin[22]:='v';
+  rus[23]:='х';     latin[23]:='x';
+  rus[24]:='ц';     latin[24]:='w';
+  rus[25]:='ч';     latin[25]:='y';
+  rus[26]:='ш';     latin[26]:='z';
+  rus[27]:='щ';
+  rus[28]:='ъ';
+  rus[29]:='ы';
+  rus[30]:='ь';
+  rus[31]:='э';
+  rus[32]:='ю';
+  rus[33]:='я';
+
+
+bf1:=rus[Random(33)];
+bf2:=rus[Random(33)];
+bf3:=latin[Random(33)];
+
+
+  x1:=Random(690);
+  x2:=Random(690);
+  x3:=Random(690);
+  while True do
+  begin
+    while (i1<=194) and (i2<=194) and (i3<=194) do  movechar1;
+  end;
+
+end;
+
+procedure TMoveThread.movechar1;
+begin
+
+  with Fbox do
+   begin
+if (ord(bf1) = Ch) then
+begin
+Canvas.Brush.Color:=clScrollBar;
+Canvas.Pen.Color:=clScrollBar;
+Canvas.Brush.Style:=bsSolid;
+Canvas.Rectangle(x1,i1,x1+22,i1+22);
+ bf1:=rus[Random(33)];
+ i1:=0;
+end;
+if (ord(bf2) = Ch) then
+begin
+Canvas.Brush.Color:=clScrollBar;
+Canvas.Pen.Color:=clScrollBar;
+Canvas.Brush.Style:=bsSolid;
+Canvas.Rectangle(x2,i2,x2+22,i2+22);
+bf2:=rus[Random(33)];
+ i2:=0;
+end;
+if (ord(bf3) = Ch) then
+begin
+Canvas.Brush.Color:=clScrollBar;
+Canvas.Pen.Color:=clScrollBar;
+Canvas.Brush.Style:=bsSolid;
+Canvas.Rectangle(x3,i3,x3+22,i3+22);;
+bf3:=rus[Random(33)];
+i3:=0;
+end;
+
+   canvas.TextOut(x1,i1,bf1);
+   canvas.TextOut(x2,i2,bf2);
+   canvas.TextOut(x3,i3,bf3);
+   sleep(100);
+     inc(i1);
+     inc(i2);
+     inc(i3);
+   end;
+end;
+
+
+end.

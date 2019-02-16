@@ -1,0 +1,27 @@
+unit Unit8;
+
+interface
+
+uses
+  System.Classes;
+
+type
+  TThrCopy = class(TThread)
+  private
+  procedure Copy();
+  protected
+    procedure Execute; override;
+  end;
+
+implementation
+uses Unit2;
+var
+Fclose:boolean;
+
+
+procedure TThrCopy.Execute;
+begin
+  { Place thread code here }
+end;
+
+end.

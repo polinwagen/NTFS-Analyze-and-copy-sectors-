@@ -1,0 +1,134 @@
+unit MvThr;
+
+interface
+
+uses
+ Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ComCtrls, ExtCtrls,Math;
+
+
+type
+  TMoveThread = class(TThread)
+  private
+     FBox: TPaintBox;
+     i1,i2,i3:integer;
+     b0,b1,b2:char;
+     x1,x2,x3:integer;
+
+     procedure movechar1;
+
+  protected
+    procedure Execute; override;
+    public
+    constructor Create( T:TPaintBox);
+    destructor Destroy; override;
+  end;
+
+
+implementation
+uses тренажер;
+
+constructor TMoveThread.Create( T:TPaintBox);
+begin
+          Fbox:=T; i1:=0;
+                   i2:=0;
+                   i3:=0;
+         inherited Create(True);
+end;
+destructor TMoveThread.Destroy;
+begin
+Fbox.Free;
+
+ inherited Destroy;
+end;
+
+
+procedure TMoveThread.Execute;
+  begin
+  rus[1]:='а';
+  rus[2]:='б';
+  rus[3]:='в';
+  rus[4]:='г';
+  rus[5]:='д';
+  rus[6]:='е';
+  rus[7]:='ё';
+  rus[8]:='ж';
+  rus[9]:='з';
+  rus[10]:='и';
+  rus[11]:='й';
+  rus[12]:='к';
+  rus[13]:='л';
+  rus[14]:='м';
+  rus[15]:='н';
+  rus[16]:='о';
+  rus[17]:='п';
+  rus[18]:='р';
+  rus[19]:='с';
+  rus[20]:='т';
+  rus[21]:='у';
+  rus[22]:='ф';
+  rus[23]:='х';
+  rus[24]:='ц';
+  rus[25]:='ч';
+  rus[26]:='ш';
+  rus[27]:='щ';
+  rus[28]:='ъ';
+  rus[29]:='ы';
+  rus[30]:='ь';
+  rus[31]:='э';
+  rus[32]:='ю';
+  rus[33]:='я';
+
+
+bf1:=rus[Random(33)];
+bf2:=rus[Random(33)];
+bf3:=rus[Random(33)];
+
+  x1:=Random(690);
+  x2:=Random(690);
+  x3:=Random(690);
+  while True do
+  begin
+
+    while i1<=194 do  movechar1;
+    with Fbox do
+     Canvas.Free;
+  end;
+
+end;
+
+procedure TMoveThread.movechar1;
+begin
+
+  with Fbox do
+   begin
+if (ord(bf1) = Ch) then
+begin
+Canvas.Pixels[x1,i1] := clScrollBar;
+ bf1:=rus[Random(33)];
+ i1:=0;
+end;
+if (ord(bf2) = Ch) then
+begin
+Canvas.Pixels[x2,i2] := clScrollBar;
+bf2:=rus[Random(33)];
+ i2:=0;
+end;
+if (ord(bf3) = Ch) then
+begin
+Canvas.Pixels[x3,i3] := clScrollBar;
+bf3:=rus[Random(33)];
+i3:=0;
+end;
+
+   canvas.TextOut(x1,i1,bf1);
+   canvas.TextOut(x2,i2,bf2);
+   canvas.TextOut(x3,i3,bf3);
+   sleep(100);
+     inc(i1);
+     inc(i2);
+     inc(i3);
+   end;
+end;
+
+end.

@@ -1,0 +1,117 @@
+unit тренажер;
+
+interface
+
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls,
+  Vcl.Touch.Keyboard, Vcl.ExtCtrls,StrUtils,MvThr;
+
+type
+  TForm6 = class(TForm)
+    TouchKeyboard1: TTouchKeyboard;
+    Label1: TLabel;
+    Label2: TLabel;
+    Button2: TButton;
+    Button3: TButton;
+    Button4: TButton;
+    Label3: TLabel;
+    Button5: TButton;
+    PaintBox1: TPaintBox;
+    Button6: TButton;
+    Label4: TLabel;
+    procedure Button5Click(Sender: TObject);
+    procedure PaintBox1Paint(Sender: TObject);
+    procedure Button2KeyPress(Sender: TObject; var Key: Char);
+    procedure Button2Click(Sender: TObject);
+    procedure Button6Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+
+
+
+  private
+
+
+  public
+
+  end;
+
+var
+  Form6: TForm6;
+
+  Ch: word;
+  rus:array [1..33] of char;
+  latin:array [1..26] of char;
+  bf1,bf2,bf3:char;
+  count,count1:byte;
+  Thread1,Thread2:TMoveThread;
+
+implementation
+
+{$R *.dfm}
+
+procedure TForm6.Button2Click(Sender: TObject);
+begin
+if Thread1.Suspended=true then  Thread1.Resume;
+end;
+
+procedure TForm6.Button2KeyPress(Sender: TObject; var Key: Char);
+begin
+Ch:=Ord(Key);
+
+
+if (ord(bf1) = Ch) then
+begin
+Inc(count);
+Label3.Caption := 'Правильных букв :' +IntToStr(count);
+end;
+
+if (ord(bf2) = Ch) then
+begin
+Inc(count);
+Label3.Caption := 'Правильных букв :' +IntToStr(count);
+end;
+
+
+if (ord(bf3) = Ch) then
+begin
+Inc(count);
+Label3.Caption := 'Правильных букв :' +IntToStr(count);
+end;
+
+ if (ord(bf1)<>Ch)or(ord(bf2)<>Ch)or (ord(bf3)<>Ch) then
+ begin
+ Inc(count1);
+Label4.Caption := 'Неправильных букв :' +IntToStr(count1);
+end;
+
+end;
+
+procedure TForm6.Button5Click(Sender: TObject);
+begin
+if Form6.CloseQuery then Form6.Close;
+end;
+
+procedure TForm6.Button6Click(Sender: TObject);
+begin
+if Thread1.Suspended=false then  Thread1.Suspend;
+end;
+
+procedure TForm6.FormCreate(Sender: TObject);
+begin
+Thread1:=TMoveThread.Create(PaintBox1);
+Thread1.Priority:=tpLowest;
+end;
+
+procedure TForm6.PaintBox1Paint(Sender: TObject);
+begin
+PaintBox1.Canvas.Brush.Color := clScrollBar;
+PaintBox1.Canvas.FillRect(PaintBox1 .Canvas.ClipRect);
+end;
+
+
+
+
+
+end.

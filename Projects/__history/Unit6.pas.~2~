@@ -1,0 +1,82 @@
+unit Unit6;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs,MMSystem, ShellAPI, Vcl.StdCtrls,
+  Vcl.ExtCtrls, Vcl.FileCtrl,unit7;
+
+type
+  TForm6 = class(TForm)
+    DirectoryListBox1: TDirectoryListBox;
+    DriveComboBox1: TDriveComboBox;
+    FileListBox1: TFileListBox;
+    LinkLabel1: TLinkLabel;
+    LinkLabel2: TLinkLabel;
+    Button1: TButton;
+    procedure Button1Click(Sender: TObject);
+  private
+
+  public
+    { Public declarations }
+  end;
+
+var
+  Form6: TForm6;
+  select: array [0..20] of string;
+  a:LongBool;
+implementation
+
+{$R *.dfm}
+
+procedure TForm6.Button1Click(Sender: TObject);
+var
+
+i,j:integer;
+s:PWideChar;
+
+ SerialNum: dword;
+ VolumeName, FSName : array [0..255] of char;
+ MaximumFNameLength,FileSystemFlags:dword;
+ CurCluster:DWORD;
+
+begin
+ s:=Pchar(DriveCombobox1.Drive+':\');
+ a:=GetVolumeInformation(s, VolumeName, SizeOf(VolumeName),
+                         @SerialNum,
+                         MaximumFNameLength,
+                       FileSystemFlags,
+                       FSName, SizeOf(FSName)) ;
+if AnsiCompareText(FSName,'FAT32')=0
+then begin
+   ShowMessage(S);
+  ShowMessage('Файловая система FAT32 не поддерживается');
+  exit;
+  end;
+
+
+
+ for I := 0 to 20 do
+  select[i]:='';
+  j:=0;
+ for I := 0 to (FileListBox1.Items.Count-1) do
+ begin
+   if FileListBox1.Selected[i] then
+    begin
+     select[j]:=ExtractShortPathName(FileListBox1.Items.Strings[i]);
+     j:=j+1;
+    end;
+
+ end;    // for
+ if select[0]='' then
+ begin
+  ShowMessage('Не выбран ни один файл');
+  exit;
+ end;
+
+ form6.Show;
+
+end;
+
+end.
